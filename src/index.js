@@ -4,7 +4,7 @@ import './index.css';
 
   function Square(props) {
     return (
-      <button className="square" onClick={props.onClick}>
+      <button className={props.myClass} onClick={props.onClick}>
         {props.value}
       </button>
     );
@@ -18,13 +18,36 @@ import './index.css';
   
   class Board extends React.Component {
     renderSquare(i) {
-      return <Square 
-               value={this.props.squares[i]}
-               onClick={() => this.props.onClick(i)}
-             />;
+      let sqClass = "square";
+
+      if (this.props.winner.winningLine) {
+        for (let x = 0; x < 3; x++) { // [0,3,6]
+          if (i === this.props.winner.winningLine[x] ) {
+            sqClass += " winner-btn";
+            return <Square 
+                    value={this.props.squares[i]}
+                    onClick={() => this.props.onClick(i)}
+                    myClass={sqClass}
+                  />; 
+          } 
+        }
+        return <Square 
+                    value={this.props.squares[i]}
+                    onClick={() => this.props.onClick(i)}
+                    myClass={sqClass}
+                  />; 
+      } else {
+        return <Square 
+                value={this.props.squares[i]}
+                onClick={() => this.props.onClick(i)}
+                myClass={sqClass}
+              />; 
+      }
     }
   
     render() {
+
+
       return (
         <div>
           <div className="board-row">
@@ -69,7 +92,7 @@ import './index.css';
       const squares = current.squares.slice();
       const moveLocation = getMoveLocation(value);
 
-      if (calculateWinner(squares) || squares[value]) {
+      if (calculateWinner(squares).winner || squares[value]) {
         return;
       } 
 
@@ -103,15 +126,13 @@ import './index.css';
 
     render() {
       const history = this.state.history;
+      const clone = [...history];
+      clone.reverse();
+      console.log(history);
+      console.log(clone);
       const current = history[this.state.stepNumber];
       const location = current.moveLocation;
       const winner = calculateWinner(current.squares);
-
-      if (!winner && (history.length - 1) === current.squares.length) {
-        console.log("NO WINNER!");
-      } 
-      
-      // console.log(JSON.stringify(location,null,2));
 
       const moves = history.map((step, move) => {
         const selected = move === this.state.stepNumber ? 'green-btn' : '';
@@ -127,7 +148,7 @@ import './index.css';
 
       let status;
 
-      if (winner) {
+      if (winner.winner) {
         status = 'Winner is ' + winner + "!";
       } else if ((history.length - 1) === current.squares.length) {
         status = 'The result is a draw!';
@@ -141,7 +162,9 @@ import './index.css';
             <Board 
               squares={current.squares}
               onClick={(i) => this.handleClick(i)}
+              winner={winner}
               />
+            <p>REVER SORT</p>
           </div>
           <div className="game-info">
             <div>{status}</div>
@@ -176,11 +199,17 @@ import './index.css';
       const [a, b, c] = lines[i];
 
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a]
+        return {winner: squares[a], winningLine: lines[i]}
       }
     }
 
-    return null;
+    return {winner: null, winningLine: null};
+  }
+
+  function highlightWinningLine(winningLine) {
+    for (let i = 0; i < winningLine.length; i++) {
+
+    }
   }
 
   function getMoveLocation(squareKey) {
@@ -195,6 +224,6 @@ import './index.css';
        [2,1],
        [2,2]
     ]
-    console.log(smap[squareKey]);
+
     return smap[squareKey];
  }

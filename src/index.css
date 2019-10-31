@@ -52,3 +52,7 @@ body {
   .green-btn {
     color: green;
   }
+
+  .winner-btn {
+    color: red;
+  }
