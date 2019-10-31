@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-=======
 ### `npm install`
 
 Build dependencies
 
->>>>>>> 405cc9cb4b8d0363d186f89470abfa3364a439f0
 ### `npm start`
 
 Runs the app in the development mode.<br />
